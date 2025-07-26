@@ -8,10 +8,30 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ImageUpload } from '@/components/image-upload'
 import { AnalysisResults } from '@/components/analysis-results'
-import { Heart, Sparkles, Camera, History, Info } from 'lucide-react'
+import { Heart, Sparkles, Camera, History, Info, TrendingUp, Shield, Zap } from 'lucide-react'
 import { analyzePoopImage, type PoopAnalysis } from '@/lib/openai'
 import { db } from '@/lib/instant'
 import Link from 'next/link'
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.6,
+      staggerChildren: 0.1
+    }
+  }
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5 }
+  }
+}
 
 export default function Home() {
   const { user } = useUser()
@@ -98,196 +118,273 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+      <header className="sticky top-0 z-50 backdrop-blur-lg bg-white/80 dark:bg-slate-950/80 border-b border-white/20 shadow-lg">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="text-2xl">💩</div>
+          <motion.div 
+            className="flex items-center gap-3"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="text-3xl animate-pulse">💩</div>
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                 PoopScore
               </h1>
-              <p className="text-sm text-gray-600">AI-Powered Health Analysis</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">AI-Powered Health Analysis</p>
             </div>
-          </div>
+          </motion.div>
           
-          <div className="flex items-center gap-4">
+          <motion.div 
+            className="flex items-center gap-4"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             <SignedOut>
               <SignInButton>
-                <Button variant="gradient" size="lg">
+                <Button variant="gradient" size="lg" className="shadow-xl hover:shadow-2xl transition-shadow">
                   Sign In to Analyze
                 </Button>
               </SignInButton>
             </SignedOut>
             <SignedIn>
               <Link href="/history">
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="hover:bg-white/20 backdrop-blur-sm">
                   <History className="h-5 w-5" />
                 </Button>
               </Link>
               <UserButton />
             </SignedIn>
-          </div>
+          </motion.div>
         </div>
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         <SignedOut>
-          {/* Landing Page */}
-          <div className="text-center space-y-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="text-8xl mb-6">💎💩</div>
-              <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Understand Your Health Through AI
+          {/* Enhanced Landing Page */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="text-center space-y-12"
+          >
+            <motion.div variants={itemVariants}>
+              <div className="text-8xl mb-8 animate-bounce">💎💩</div>
+              <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Revolutionize Your Health
               </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-                Get professional-grade analysis of your poop health with personalized dietary recommendations. 
-                Available for both humans and dogs!
+              <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto mb-8 leading-relaxed">
+                Get professional-grade analysis of your health through advanced AI vision technology. 
+                Receive personalized dietary recommendations and health insights for both humans and dogs!
               </p>
+              
+              <div className="flex items-center justify-center gap-6 mb-8">
+                <Badge className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 shadow-lg">
+                  <Shield className="h-4 w-4 mr-2" />
+                  Medical Grade AI
+                </Badge>
+                <Badge className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 text-white border-0 shadow-lg">
+                  <Zap className="h-4 w-4 mr-2" />
+                  Instant Results
+                </Badge>
+                <Badge className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white border-0 shadow-lg">
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Precision Scoring
+                </Badge>
+              </div>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto"
+              variants={containerVariants}
+              className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto"
             >
-              <Card className="text-center">
-                <CardHeader>
-                  <Camera className="h-8 w-8 mx-auto text-blue-500 mb-2" />
-                  <CardTitle>Upload & Analyze</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600">
-                    Simply upload a photo and our AI will analyze it instantly
-                  </p>
-                </CardContent>
-              </Card>
+              <motion.div variants={itemVariants}>
+                <Card className="text-center h-full border-0 shadow-xl bg-gradient-to-br from-white to-blue-50 dark:from-slate-900 dark:to-blue-950 hover:shadow-2xl transition-all duration-300 group">
+                  <CardHeader>
+                    <div className="mx-auto mb-4 p-4 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <Camera className="h-8 w-8 text-white" />
+                    </div>
+                    <CardTitle className="text-xl font-bold">Smart Analysis</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      Upload a photo and our advanced AI analyzes it with medical-grade precision in seconds
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-              <Card className="text-center">
-                <CardHeader>
-                  <Sparkles className="h-8 w-8 mx-auto text-purple-500 mb-2" />
-                  <CardTitle>AI-Powered Insights</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600">
-                    Get detailed health scores and professional recommendations
-                  </p>
-                </CardContent>
-              </Card>
+              <motion.div variants={itemVariants}>
+                <Card className="text-center h-full border-0 shadow-xl bg-gradient-to-br from-white to-purple-50 dark:from-slate-900 dark:to-purple-950 hover:shadow-2xl transition-all duration-300 group">
+                  <CardHeader>
+                    <div className="mx-auto mb-4 p-4 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <Sparkles className="h-8 w-8 text-white" />
+                    </div>
+                    <CardTitle className="text-xl font-bold">Detailed Insights</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      Get comprehensive health scores with precise decimal ratings and detailed breakdown analysis
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-              <Card className="text-center">
-                <CardHeader>
-                  <Heart className="h-8 w-8 mx-auto text-red-500 mb-2" />
-                  <CardTitle>Improve Your Health</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600">
-                    Follow personalized dietary advice to optimize your wellness
-                  </p>
-                </CardContent>
-              </Card>
+              <motion.div variants={itemVariants}>
+                <Card className="text-center h-full border-0 shadow-xl bg-gradient-to-br from-white to-green-50 dark:from-slate-900 dark:to-green-950 hover:shadow-2xl transition-all duration-300 group">
+                  <CardHeader>
+                    <div className="mx-auto mb-4 p-4 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <Heart className="h-8 w-8 text-white" />
+                    </div>
+                    <CardTitle className="text-xl font-bold">Personalized Care</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      Receive tailored dietary recommendations and health guidance to optimize your wellness journey
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
             </motion.div>
 
-            <SignInButton>
-              <Button size="xl" variant="gradient" className="text-lg px-12 py-6">
-                Start Your Health Journey
-              </Button>
-            </SignInButton>
-          </div>
+            <motion.div variants={itemVariants}>
+              <SignInButton>
+                <Button 
+                  size="xl" 
+                  variant="gradient" 
+                  className="text-xl px-16 py-8 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
+                >
+                  <Sparkles className="h-6 w-6 mr-3" />
+                  Start Your Health Journey
+                </Button>
+              </SignInButton>
+            </motion.div>
+          </motion.div>
         </SignedOut>
 
         <SignedIn>
-          {/* Main App */}
-          <div className="space-y-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">
+          {/* Enhanced Main App */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-8"
+          >
+            <motion.div variants={itemVariants} className="text-center">
+              <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Welcome back, {user?.firstName}! 👋
               </h2>
-              <p className="text-gray-600">Upload a photo to get your health analysis</p>
-            </div>
+              <p className="text-lg text-gray-600 dark:text-gray-400">Ready for your next health analysis?</p>
+            </motion.div>
 
             {!analysis && (
-              <Card className="max-w-2xl mx-auto">
-                <CardHeader>
-                  <CardTitle className="text-center">New Health Analysis</CardTitle>
-                  <div className="flex justify-center gap-4">
-                    <Button
-                      variant={animalType === 'human' ? 'default' : 'outline'}
-                      onClick={() => setAnimalType('human')}
-                      className="flex items-center gap-2"
-                    >
-                      <span>👤</span>
-                      Human
-                    </Button>
-                    <Button
-                      variant={animalType === 'dog' ? 'default' : 'outline'}
-                      onClick={() => setAnimalType('dog')}
-                      className="flex items-center gap-2"
-                    >
-                      <span>🐕</span>
-                      Dog
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <ImageUpload
-                    onImageSelect={setSelectedImage}
-                    selectedImage={selectedImage}
-                    disabled={isAnalyzing}
-                  />
-                  
-                  {error && (
-                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                      {error}
+              <motion.div variants={itemVariants}>
+                <Card className="max-w-2xl mx-auto border-0 shadow-2xl bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-slate-900 dark:via-blue-950 dark:to-purple-950">
+                  <CardHeader>
+                    <CardTitle className="text-center text-2xl font-bold">New Health Analysis</CardTitle>
+                    <div className="flex justify-center gap-4 mt-6">
+                      <Button
+                        variant={animalType === 'human' ? 'default' : 'outline'}
+                        onClick={() => setAnimalType('human')}
+                        className={`flex items-center gap-3 px-6 py-3 text-lg transition-all duration-300 ${
+                          animalType === 'human' 
+                            ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-xl scale-105' 
+                            : 'bg-white/80 backdrop-blur-sm border-2 hover:bg-blue-50'
+                        }`}
+                        size="lg"
+                      >
+                        <span className="text-2xl">👤</span>
+                        Human
+                      </Button>
+                      <Button
+                        variant={animalType === 'dog' ? 'default' : 'outline'}
+                        onClick={() => setAnimalType('dog')}
+                        className={`flex items-center gap-3 px-6 py-3 text-lg transition-all duration-300 ${
+                          animalType === 'dog' 
+                            ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-xl scale-105' 
+                            : 'bg-white/80 backdrop-blur-sm border-2 hover:bg-green-50'
+                        }`}
+                        size="lg"
+                      >
+                        <span className="text-2xl">🐕</span>
+                        Dog
+                      </Button>
                     </div>
-                  )}
+                  </CardHeader>
+                  <CardContent className="space-y-8">
+                    <ImageUpload
+                      onImageSelect={setSelectedImage}
+                      selectedImage={selectedImage}
+                      disabled={isAnalyzing}
+                    />
+                    
+                    {error && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-red-50 border-2 border-red-200 text-red-700 px-6 py-4 rounded-xl shadow-lg"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">⚠️</span>
+                          <span className="font-medium">{error}</span>
+                        </div>
+                      </motion.div>
+                    )}
 
-                  <div className="text-center">
-                    <Button
-                      onClick={handleAnalyze}
-                      disabled={!selectedImage || isAnalyzing}
-                      size="lg"
-                      variant="gradient"
-                      className="min-w-[200px]"
-                    >
-                      {isAnalyzing ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Analyzing...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="h-4 w-4 mr-2" />
-                          Analyze Health
-                        </>
-                      )}
-                    </Button>
-                  </div>
+                    <div className="text-center">
+                      <Button
+                        onClick={handleAnalyze}
+                        disabled={!selectedImage || isAnalyzing}
+                        size="xl"
+                        variant="gradient"
+                        className="min-w-[250px] shadow-xl hover:shadow-2xl transition-all duration-300"
+                      >
+                        {isAnalyzing ? (
+                          <>
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                            Analyzing Your Sample...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="h-5 w-5 mr-3" />
+                            Analyze Health Score
+                          </>
+                        )}
+                      </Button>
+                    </div>
 
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <div className="flex items-start gap-3">
-                      <Info className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                      <div className="text-sm text-blue-700">
-                        <p className="font-medium mb-1">Privacy & Accuracy Notice</p>
-                        <p>
-                          Your images are analyzed securely and not stored permanently. 
-                          This analysis is for informational purposes only and should not replace professional medical advice.
-                        </p>
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="p-2 bg-blue-500 rounded-lg">
+                          <Info className="h-5 w-5 text-white" />
+                        </div>
+                        <div className="text-sm text-blue-800 dark:text-blue-200">
+                          <p className="font-semibold mb-2">Privacy & Image Guidelines</p>
+                          <p className="leading-relaxed mb-3">
+                            Your images are analyzed securely with end-to-end encryption and not stored permanently. 
+                            Our AI provides precise decimal scoring (not rounded to 5s) for more nuanced health insights.
+                            This analysis is for informational purposes and should complement professional medical advice.
+                          </p>
+                          <p className="leading-relaxed">
+                            <strong>For best results:</strong> Ensure the sample is clearly visible, well-lit, and in focus. 
+                            Our AI can analyze samples in various environments (grass, ground, pavement, etc.) as long as the sample itself is clearly visible.
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </motion.div>
             )}
 
             {analysis && (
-              <div className="max-w-3xl mx-auto">
+              <motion.div
+                variants={itemVariants}
+                className="max-w-4xl mx-auto"
+              >
                 <AnalysisResults
                   analysis={analysis}
                   animalType={animalType}
@@ -298,7 +395,7 @@ export default function Home() {
                   }}
                 />
                 
-                <div className="text-center mt-8">
+                <div className="text-center mt-12">
                   <Button
                     variant="outline"
                     onClick={() => {
@@ -306,13 +403,16 @@ export default function Home() {
                       setSelectedImage(null)
                       setError('')
                     }}
+                    size="lg"
+                    className="bg-white/50 backdrop-blur-sm border-2 hover:bg-white/80 transition-all duration-300"
                   >
+                    <Camera className="h-5 w-5 mr-2" />
                     Analyze Another Sample
                   </Button>
                 </div>
-              </div>
+              </motion.div>
             )}
-          </div>
+          </motion.div>
         </SignedIn>
       </main>
     </div>
