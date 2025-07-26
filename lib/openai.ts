@@ -39,59 +39,93 @@ export async function analyzePoopImage(imageUrl: string, animalType: 'human' | '
     console.log('Image URL received:', imageUrl.substring(0, 50) + '...')
     console.log('Animal type:', animalType)
 
-    const prompt = `You are a professional veterinary and medical health analyst with expertise in digestive health assessment. Analyze this ${animalType} poop image and provide a comprehensive, precise health assessment.
+    const prompt = `You are an expert veterinary gastroenterologist and medical health analyst specializing in digestive health assessment through visual stool analysis. You have 15+ years of experience analyzing ${animalType} stool samples for health indicators.
 
-IMPORTANT CONTEXT:
-- This image may show poop in various environments (grass, ground, pavement, toilet, etc.)
-- The sample may be in different lighting conditions or angles
-- Focus on what you can observe, even if the image quality varies
-- Be flexible in your analysis while maintaining professional standards
+## CRITICAL ANALYSIS CONTEXT:
+- Samples appear in various environments: grass, dirt, pavement, litter boxes, toilets, paper, etc.
+- Lighting conditions vary: natural daylight, indoor lighting, flash photography, shadows
+- Image angles and distances vary but you adapt your analysis accordingly
+- You detect subtle health indicators that others might miss
 
-CRITICAL SCORING INSTRUCTIONS:
-- DO NOT use round numbers or intervals of 5
-- Provide precise decimal scores (e.g., 67.3, 82.7, 91.2)
-- Base scores on actual visual evidence, not convenient numbers
-- Each metric should reflect nuanced assessment
-- If certain aspects are unclear due to image quality, estimate based on visible features
+## REFERENCE STANDARDS FOR ${animalType.toUpperCase()} STOOL:
 
-IMPORTANT: You MUST respond with ONLY valid JSON. Do not include any text before or after the JSON object.
+### HEALTHY INDICATORS:
+**Color**: ${animalType === 'dog' ? 'Chocolate brown to medium brown, uniform coloration' : 'Medium to dark brown, consistent throughout'}
+**Consistency**: ${animalType === 'dog' ? 'Firm but not hard, maintains shape when deposited, slight moisture sheen' : 'Bristol Type 3-4: Smooth, soft, holds together'}
+**Shape**: ${animalType === 'dog' ? 'Log-shaped or segmented logs, proportional to dog size' : 'Sausage-shaped, may have cracks on surface, 1-2 inches diameter'}
+**Volume**: ${animalType === 'dog' ? 'Proportional to dog size and meal frequency' : '4-8 inches total length, may be in segments'}
+**Surface**: Smooth to slightly textured, no visible undigested food particles
+**Odor indicators**: While not visible, healthy stool photographs often show minimal environmental disturbance
 
-Evaluation criteria for detailed analysis:
-1. COLOR (0-100): Healthy brown variations vs concerning colors (green, black, white, red, yellow)
-2. CONSISTENCY (0-100): Bristol Stool Scale assessment - ideal formed but soft vs too hard/too loose
-3. SHAPE (0-100): Well-formed logs vs fragmented, pellets, or shapeless
-4. FREQUENCY indicators (0-100): Based on visual cues about health patterns
-5. VOLUME (0-100): Appropriate size relative to ${animalType}
+### CONCERNING INDICATORS:
+**Black/Tarry**: Upper GI bleeding, requires immediate attention
+**Bright Red**: Lower GI bleeding, hemorrhoids, anal fissures
+**White/Gray**: Bile duct obstruction, liver issues, excessive bone in diet (dogs)
+**Yellow/Orange**: Rapid transit, malabsorption, liver/gallbladder issues
+**Green**: Rapid transit, excessive grass consumption (dogs), bacterial overgrowth
+**Mucus Coating**: Inflammation, parasites, stress colitis
+**Watery/Liquid**: Severe diarrhea, infection, toxin ingestion
+**Hard Pellets**: Severe constipation, dehydration
+**Pencil-Thin**: Obstruction, mass, severe inflammation
+**Undigested Food**: Malabsorption, eating too fast, enzyme deficiency
 
-Respond with ONLY this exact JSON format (no additional text):
+## SCORING METHODOLOGY:
+- Use precise decimals (e.g., 73.6, 81.4, 92.7) - NEVER round to 5s or 10s
+- Base scores on cumulative evidence from all visible features
+- Weight critical health indicators more heavily
+- Consider ${animalType}-specific normal variations
+
+## ANALYSIS FRAMEWORK:
+
+1. **Initial Visual Assessment**: Overall appearance, environment, lighting quality
+2. **Color Analysis**: Compare to healthy baseline, note any discoloration zones
+3. **Consistency Evaluation**: Bristol Stool Scale adaptation for ${animalType}
+4. **Shape & Formation**: Structural integrity, segmentation, surface features
+5. **Volume Assessment**: Relative to expected normal for ${animalType}
+6. **Abnormality Detection**: Parasites, blood, mucus, foreign objects
+7. **Health Risk Calculation**: Combine all factors for urgency level
+
+IMPORTANT: Respond with ONLY valid JSON. No explanatory text before or after.
+
 {
-  "rating": [precise decimal between 1-100, NOT rounded to 5s],
+  "rating": [precise decimal 1-100, based on weighted health factors],
   "healthMetrics": {
-    "color": [precise decimal 0-100],
-    "consistency": [precise decimal 0-100], 
-    "shape": [precise decimal 0-100],
-    "frequency": [precise decimal 0-100],
-    "volume": [precise decimal 0-100]
+    "color": [precise decimal 0-100, where 100 = perfect healthy brown],
+    "consistency": [precise decimal 0-100, where 100 = ideal firmness],
+    "shape": [precise decimal 0-100, where 100 = perfect formation],
+    "frequency": [precise decimal 0-100, estimated from visual cues],
+    "volume": [precise decimal 0-100, where 100 = ideal proportion]
   },
-  "summary": "[professional 2-3 sentence summary with specific observations]",
-  "recommendations": ["specific recommendation 1", "specific recommendation 2", "specific recommendation 3"],
-  "healthConcerns": ["specific concern 1 if any", "specific concern 2 if any"],
-  "dietaryChanges": ["specific dietary change 1", "specific dietary change 2", "specific dietary change 3"],
+  "summary": "[2-3 sentences with specific visual observations and clinical interpretation]",
+  "recommendations": [
+    "[specific action based on findings]",
+    "[targeted dietary or lifestyle change]",
+    "[monitoring or follow-up suggestion]"
+  ],
+  "healthConcerns": [
+    "[specific concern with visual evidence]",
+    "[secondary concern if applicable]"
+  ],
+  "dietaryChanges": [
+    "[specific food addition/removal]",
+    "[hydration or fiber adjustment]",
+    "[feeding schedule modification]"
+  ],
   "urgencyLevel": "low|medium|high",
   "detailedBreakdown": {
-    "colorAnalysis": "[detailed color assessment with specific observations]",
-    "consistencyAnalysis": "[detailed consistency assessment with Bristol Scale reference]",
-    "shapeAnalysis": "[detailed shape and formation assessment]",
-    "overallHealth": "[comprehensive health interpretation]"
+    "colorAnalysis": "[specific color observations with health implications]",
+    "consistencyAnalysis": "[Bristol Scale rating with ${animalType}-specific interpretation]",
+    "shapeAnalysis": "[formation quality, segmentation, surface texture analysis]",
+    "overallHealth": "[comprehensive assessment integrating all findings]"
   }
 }
 
-Focus on evidence-based, precise assessment. Avoid generic advice - be specific to what you observe. If the image quality limits certain observations, note this in your analysis but still provide the best assessment possible.`
+Provide professional, evidence-based analysis. Be specific about visual findings. If image quality limits certain observations, work with visible features while noting limitations.`
 
     console.log('Making OpenAI API call for detailed image analysis...')
     
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "o4-mini",
       messages: [
         {
           role: "user",
@@ -107,8 +141,7 @@ Focus on evidence-based, precise assessment. Avoid generic advice - be specific 
           ]
         }
       ],
-      max_tokens: 1500,
-      temperature: 0.1,
+      max_completion_tokens: 1500,
       response_format: { type: "json_object" }
     })
 
