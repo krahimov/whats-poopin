@@ -95,26 +95,9 @@ export default function Home() {
   }
 
   const handleSaveAnalysis = async () => {
-    if (!analysis || !user || !selectedImage) return
-
-    try {
-      const imageUrl = await uploadImageToCloudinary(selectedImage)
-      
-      await db.transact([
-        db.tx.analyses[crypto.randomUUID()].update({
-          userId: user.id,
-          imageUrl,
-          rating: analysis.rating,
-          summary: analysis.summary,
-          recommendations: analysis.recommendations,
-          animalType,
-          createdAt: Date.now(),
-          isPublic: false,
-        })
-      ])
-    } catch (err) {
-      console.error('Failed to save analysis:', err)
-    }
+    // Analysis is now automatically saved when performed
+    // This function can be used for additional save operations if needed
+    console.log('Analysis already saved to history')
   }
 
   return (
@@ -388,7 +371,7 @@ export default function Home() {
                 <AnalysisResults
                   analysis={analysis}
                   animalType={animalType}
-                  imageUrl=""
+                  imageUrl={selectedImage ? URL.createObjectURL(selectedImage) : ""}
                   onSave={handleSaveAnalysis}
                   onShare={() => {
                     // TODO: Implement sharing functionality

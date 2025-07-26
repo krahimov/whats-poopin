@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { analyzePoopImage } from '@/lib/openai'
+import { db } from '@/lib/instant'
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,6 +30,26 @@ export async function POST(request: NextRequest) {
 
     // Analyze the image
     const analysis = await analyzePoopImage(imageUrl, animalType)
+
+    // Save the analysis to InstantDB
+    try {
+      await db.transact([
+        db.tx.analyses[crypto.randomUUID()].update({
+          userId,
+          imageUrl,
+          rating: analysis.rating,
+          summary: analysis.summary,
+          recommendations: analysis.recommendations,
+          animalType,
+          createdAt: Date.now(),
+          isPublic: false,
+        })
+      ])
+      console.log('Analysis saved to InstantDB successfully')
+    } catch (error) {
+      console.error('Failed to save analysis to InstantDB:', error)
+      // Don't fail the request if saving to DB fails
+    }
 
     return NextResponse.json(analysis)
   } catch (error) {

@@ -366,17 +366,10 @@ export function AnalysisResults({
 
       {/* Action Buttons */}
       <div className="flex gap-4 justify-center pt-4">
-        {onSave && (
-          <Button 
-            onClick={onSave} 
-            disabled={isSaving}
-            size="lg"
-            className="flex items-center gap-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg"
-          >
-            <Save className="h-5 w-5" />
-            {isSaving ? 'Saving Analysis...' : 'Save to History'}
-          </Button>
-        )}
+        <div className="flex items-center gap-2 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950 px-4 py-2 rounded-lg">
+          <Save className="h-4 w-4" />
+          <span className="text-sm font-medium">Automatically saved to history</span>
+        </div>
         {onShare && (
           <Button 
             variant="outline" 

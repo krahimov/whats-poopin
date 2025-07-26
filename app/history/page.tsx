@@ -8,16 +8,17 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Calendar, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { generatePoopEmoji, getHealthCategory, formatDate } from '@/lib/utils'
-import { db, type Analysis } from '@/lib/instant'
+import { db, type Analysis, initializeSchema } from '@/lib/instant'
 import Link from 'next/link'
 
 export default function HistoryPage() {
   const { user } = useUser()
   const [analyses, setAnalyses] = useState<Analysis[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string>('')
 
   // Query analyses from InstantDB
-  const { data, isLoading } = db.useQuery({
+  const { data, isLoading, error: queryError } = db.useQuery({
     analyses: {
       $: {
         where: {
@@ -30,12 +31,57 @@ export default function HistoryPage() {
     }
   })
 
+  // Simple test query to see if InstantDB is working
+  const { data: testData } = db.useQuery({
+    analyses: {
+      $: {}
+    }
+  })
+
+  // Debug query
+  console.log('Query debug:', {
+    userId: user?.id,
+    query: {
+      analyses: {
+        $: {
+          where: {
+            userId: user?.id || '',
+          },
+          order: {
+            createdAt: 'desc'
+          }
+        }
+      }
+    },
+    testData: testData?.analyses?.length || 0
+  })
+
   useEffect(() => {
+    if (queryError) {
+      console.error('InstantDB query error:', queryError)
+      setError(queryError.toString())
+    }
+  }, [queryError])
+
+  // Initialize schema when component mounts
+  useEffect(() => {
+    if (user?.id) {
+      initializeSchema().catch(console.error)
+    }
+  }, [user?.id])
+
+  useEffect(() => {
+    console.log('History page debug:', { user, data, isLoading, error })
+    console.log('InstantDB app ID:', process.env.NEXT_PUBLIC_INSTANT_APP_ID)
+    
     if (!isLoading && data?.analyses) {
       setAnalyses(data.analyses as Analysis[])
       setLoading(false)
+    } else if (!isLoading && !data?.analyses) {
+      console.log('No analyses found or error occurred')
+      setLoading(false)
     }
-  }, [data, isLoading])
+  }, [data, isLoading, user])
 
   const getTrend = (currentRating: number, previousRating?: number) => {
     if (!previousRating) return null
@@ -66,6 +112,53 @@ export default function HistoryPage() {
     )
   }
 
+  // Check if InstantDB is properly configured
+  if (!process.env.NEXT_PUBLIC_INSTANT_APP_ID) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="text-center">
+            <div className="text-6xl mb-4">⚠️</div>
+            <h3 className="text-xl font-semibold mb-2">Configuration Error</h3>
+            <p className="text-gray-600 mb-6">
+              InstantDB is not properly configured. Please add NEXT_PUBLIC_INSTANT_APP_ID to your .env.local file.
+            </p>
+            <div className="bg-gray-100 p-4 rounded-lg mb-6 text-left">
+              <p className="text-sm font-mono">NEXT_PUBLIC_INSTANT_APP_ID=your_instant_app_id</p>
+            </div>
+            <Link href="/">
+              <Button variant="gradient">
+                Go Back Home
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Check if user is authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="text-center">
+            <div className="text-6xl mb-4">🔐</div>
+            <h3 className="text-xl font-semibold mb-2">Authentication Required</h3>
+            <p className="text-gray-600 mb-6">
+              Please sign in to view your health history.
+            </p>
+            <Link href="/">
+              <Button variant="gradient">
+                Sign In
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="max-w-4xl mx-auto px-4 py-8">
@@ -81,6 +174,58 @@ export default function HistoryPage() {
               <h1 className="text-3xl font-bold">Health History</h1>
               <p className="text-gray-600">Track your wellness journey over time</p>
             </div>
+          </div>
+          <div className="flex gap-2">
+            <Button 
+              onClick={async () => {
+                try {
+                  await initializeSchema()
+                } catch (err) {
+                  console.error('Failed to initialize schema:', err)
+                }
+              }}
+              variant="outline"
+              size="sm"
+            >
+              Init Schema
+            </Button>
+            <Button 
+              onClick={async () => {
+                try {
+                  await db.transact([
+                    db.tx.analyses[crypto.randomUUID()].update({
+                      userId: user?.id || '',
+                      imageUrl: 'https://example.com/test.jpg',
+                      rating: 85,
+                      summary: 'Test analysis - This is a test entry to verify InstantDB is working.',
+                      recommendations: ['Test recommendation 1', 'Test recommendation 2'],
+                      animalType: 'human' as const,
+                      createdAt: Date.now(),
+                      isPublic: false,
+                    })
+                  ])
+                  console.log('Test data created successfully')
+                } catch (err) {
+                  console.error('Failed to create test data:', err)
+                }
+              }}
+              variant="outline"
+              size="sm"
+            >
+              Add Test Data
+            </Button>
+            <Button 
+              onClick={() => {
+                setLoading(true)
+                setError('')
+                // Force a refresh by updating the query
+                window.location.reload()
+              }}
+              variant="outline"
+              size="sm"
+            >
+              Refresh
+            </Button>
           </div>
         </div>
 
@@ -134,6 +279,24 @@ export default function HistoryPage() {
           </div>
         )}
 
+        {/* Error Display */}
+        {error && (
+          <Card className="mb-6 border-red-200 bg-red-50">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <div className="text-2xl">⚠️</div>
+                <div>
+                  <h3 className="font-semibold text-red-800">Error Loading Data</h3>
+                  <p className="text-red-600 text-sm">{error}</p>
+                  <p className="text-red-500 text-xs mt-2">
+                    This might be due to InstantDB configuration issues. Please check your NEXT_PUBLIC_INSTANT_APP_ID environment variable.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Analysis History */}
         {analyses.length === 0 ? (
           <Card className="text-center py-12">
@@ -143,6 +306,9 @@ export default function HistoryPage() {
               <p className="text-gray-600 mb-6">
                 Start tracking your health by analyzing your first sample!
               </p>
+              <div className="text-xs text-gray-500 mb-4">
+                Debug: User ID: {user?.id} | Loading: {isLoading.toString()} | Data: {data ? 'Present' : 'None'} | Total Records: {testData?.analyses?.length || 0}
+              </div>
               <Link href="/">
                 <Button variant="gradient">
                   Start Analysis
