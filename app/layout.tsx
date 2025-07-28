@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ClerkProvider } from '@clerk/nextjs'
 import "./globals.css";
+import { ClerkProvider } from '@clerk/nextjs'
+import UserSync from '@/components/user-sync'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,24 +15,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PoopScore - AI-Powered Health Analysis",
-  description: "Analyze your poop health with AI and get personalized dietary recommendations",
-  keywords: ["health", "analysis", "AI", "nutrition", "wellness"],
-  authors: [{ name: "PoopScore Team" }],
-  viewport: "width=device-width, initial-scale=1",
-  manifest: "/manifest.json",
+  title: "PoopScore - AI Health Analysis",
+  description: "AI-powered health analysis for humans and pets",
+  manifest: '/manifest.json',
+  themeColor: '#4F46E5',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
-    title: "PoopScore",
-  },
-  formatDetection: {
-    telephone: false,
-  },
-  themeColor: "#3b82f6",
-  other: {
-    "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "default",
+    statusBarStyle: 'default',
+    title: 'PoopScore',
   },
 };
 
@@ -46,6 +43,7 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 min-h-screen`}
         >
+          <UserSync />
           {children}
         </body>
       </html>

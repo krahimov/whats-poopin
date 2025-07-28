@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { analyzePoopImage } from '@/lib/openai'
-import { db } from '@/lib/instant'
+import { adminDB } from '@/lib/instant-admin'
+import { syncCurrentUser } from '@/lib/user-sync'
+import { randomUUID } from 'crypto'
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,6 +12,9 @@ export async function POST(request: NextRequest) {
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    // Sync user to ensure they exist in InstantDB (non-blocking)
+    await syncCurrentUser(userId).catch(() => {}) // Don't fail if sync fails
 
     const body = await request.json()
     const { imageUrl, animalType } = body
@@ -31,10 +36,10 @@ export async function POST(request: NextRequest) {
     // Analyze the image
     const analysis = await analyzePoopImage(imageUrl, animalType)
 
-    // Save the analysis to InstantDB
+    // Save the analysis to InstantDB using admin client
     try {
-      await db.transact([
-        db.tx.analyses[crypto.randomUUID()].update({
+      await adminDB.transact([
+        adminDB.tx.analyses[randomUUID()].update({
           userId,
           imageUrl,
           rating: analysis.rating,

@@ -125,7 +125,7 @@ Provide professional, evidence-based analysis. Be specific about visual findings
     console.log('Making OpenAI API call for detailed image analysis...')
     
     const response = await openai.chat.completions.create({
-      model: "o4-mini",
+      model: "o3",
       messages: [
         {
           role: "user",
