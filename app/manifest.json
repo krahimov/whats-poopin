@@ -1,6 +1,6 @@
 {
-  "name": "PoopScore - AI Health Analysis",
-  "short_name": "PoopScore",
+  "name": "What's Poopin - AI Health Analysis",
+  "short_name": "What's Poopin",
   "description": "AI-powered poop health analysis with personalized dietary recommendations",
   "start_url": "/",
   "display": "standalone",

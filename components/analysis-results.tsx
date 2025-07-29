@@ -175,7 +175,7 @@ export function AnalysisResults({
             {emoji}
           </motion.div>
           <CardTitle className="text-4xl font-bold mb-3 bg-gradient-to-r from-indigo-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
-            PoopScore: {analysis.rating.toFixed(1)}
+                            Health Score: {analysis.rating.toFixed(1)}
           </CardTitle>
           <div className="flex items-center justify-center gap-4">
             <Badge className={cn("text-lg px-6 py-2 shadow-lg", color)}>

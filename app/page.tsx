@@ -114,9 +114,9 @@ export default function Home() {
             <div className="text-3xl animate-pulse">💩</div>
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                PoopScore
-              </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400">AI-Powered Health Analysis</p>
+                              What's Poopin
+            </h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400">AI-Powered Health Analysis</p>
             </div>
           </motion.div>
           

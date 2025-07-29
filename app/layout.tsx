@@ -15,20 +15,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PoopScore - AI Health Analysis",
+  title: "What's Poopin - AI Health Analysis",
   description: "AI-powered health analysis for humans and pets",
-  manifest: '/manifest.json',
-  themeColor: '#4F46E5',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
+  manifest: "/manifest.json",
+  themeColor: "#3b82f6",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=5",
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
-    title: 'PoopScore',
+    statusBarStyle: "default",
+    title: "What's Poopin",
+  },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/favicon.ico",
   },
 };
 

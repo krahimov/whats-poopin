@@ -1,4 +1,4 @@
-# 💩 PoopScore - AI-Powered Health Analysis
+# 💩 What's Poopin - AI-Powered Health Analysis
 
 A modern web application that analyzes poop health using AI and provides personalized dietary recommendations for both humans and dogs.
 
