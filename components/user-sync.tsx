@@ -1,10 +1,33 @@
 'use client'
 
-import { useUser } from '@clerk/nextjs'
 import { useEffect, useRef, useState } from 'react'
 
+// Get the correct API base URL
+const getApiBaseUrl = () => {
+  if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_CAPACITOR_BUILD === 'true') {
+    return 'https://whats-poopin-git-dev-karim-rahimovs-projects.vercel.app'
+  }
+  return ''
+}
+
+// Mobile-safe hook
+const useMobileUser = () => {
+  const isMobileBuild = process.env.NEXT_PUBLIC_CAPACITOR_BUILD === 'true'
+  
+  if (isMobileBuild) {
+    return { isSignedIn: false, user: null }
+  }
+  
+  try {
+    const { useUser } = require('@clerk/nextjs')
+    return useUser()
+  } catch {
+    return { isSignedIn: false, user: null }
+  }
+}
+
 export default function UserSync() {
-  const { isSignedIn, user } = useUser()
+  const { isSignedIn, user } = useMobileUser()
   const syncedRef = useRef(false)
   const [syncing, setSyncing] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -16,7 +39,7 @@ export default function UserSync() {
       // Sync user with InstantDB
       const syncUser = async () => {
         try {
-          const response = await fetch('/api/sync-user', {
+          const response = await fetch(`${getApiBaseUrl()}/api/sync-user`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

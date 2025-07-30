@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from 'react'
-import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/nextjs'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -12,6 +11,18 @@ import { Heart, Sparkles, Camera, History, Info, TrendingUp, Shield, Zap } from 
 import { analyzePoopImage, type PoopAnalysis } from '@/lib/openai'
 import { db } from '@/lib/instant'
 import Link from 'next/link'
+import { useMobileAuth, MobileSignInButton, MobileUserButton, isMobileBuild, getApiBaseUrl } from '@/lib/mobile-utils'
+
+// Mobile-safe Clerk components
+const SignedIn = ({ children }: { children: React.ReactNode }) => {
+  const { isSignedIn } = useMobileAuth()
+  return isSignedIn ? <>{children}</> : null
+}
+
+const SignedOut = ({ children }: { children: React.ReactNode }) => {
+  const { isSignedIn } = useMobileAuth()
+  return !isSignedIn ? <>{children}</> : null
+}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -34,7 +45,7 @@ const itemVariants = {
 }
 
 export default function Home() {
-  const { user } = useUser()
+  const { user } = useMobileAuth()
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [animalType, setAnimalType] = useState<'human' | 'dog'>('human')
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -45,7 +56,7 @@ export default function Home() {
     const formData = new FormData()
     formData.append('file', file)
     
-    const response = await fetch('/api/upload', {
+          const response = await fetch(`${getApiBaseUrl()}/api/upload`, {
       method: 'POST',
       body: formData,
     })
@@ -70,7 +81,7 @@ export default function Home() {
       const imageUrl = await uploadImageToCloudinary(selectedImage)
       
       // Analyze with our API
-      const response = await fetch('/api/analyze', {
+      const response = await fetch(`${getApiBaseUrl()}/api/analyze`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -127,11 +138,11 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <SignedOut>
-              <SignInButton>
+              <MobileSignInButton>
                 <Button variant="gradient" size="lg" className="shadow-xl hover:shadow-2xl transition-shadow">
                   Sign In to Analyze
                 </Button>
-              </SignInButton>
+              </MobileSignInButton>
             </SignedOut>
             <SignedIn>
               <Link href="/history">
@@ -139,7 +150,7 @@ export default function Home() {
                   <History className="h-5 w-5" />
                 </Button>
               </Link>
-              <UserButton />
+              <MobileUserButton />
             </SignedIn>
           </motion.div>
         </div>
@@ -234,7 +245,7 @@ export default function Home() {
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <SignInButton>
+              <MobileSignInButton>
                 <Button 
                   size="xl" 
                   variant="gradient" 
@@ -243,7 +254,7 @@ export default function Home() {
                   <Sparkles className="h-6 w-6 mr-3" />
                   Start Your Health Journey
                 </Button>
-              </SignInButton>
+              </MobileSignInButton>
             </motion.div>
           </motion.div>
         </SignedOut>

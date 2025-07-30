@@ -31,21 +31,32 @@ export const metadata: Metadata = {
   },
 };
 
+// Check if this is a mobile build
+const isMobileBuild = process.env.CAPACITOR_BUILD === 'true'
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 min-h-screen`}
-        >
-          <UserSync />
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        {isMobileBuild ? (
+          // Mobile build - no Clerk provider
+          <div>
+            {children}
+          </div>
+        ) : (
+          // Web build - with Clerk provider
+          <ClerkProvider>
+            <UserSync />
+            {children}
+          </ClerkProvider>
+        )}
+      </body>
+    </html>
   );
 }
