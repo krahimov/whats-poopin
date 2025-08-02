@@ -18,21 +18,11 @@ export const metadata: Metadata = {
   title: "What's Poopin - AI Health Analysis",
   description: "AI-powered health analysis for humans and pets",
   manifest: "/manifest.json",
-  themeColor: "#3b82f6",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=5",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "What's Poopin",
-  },
   icons: {
     icon: "/favicon.ico",
     apple: "/favicon.ico",
   },
 };
-
-// Check if this is a mobile build
-const isMobileBuild = process.env.CAPACITOR_BUILD === 'true'
 
 export default function RootLayout({
   children,
@@ -44,18 +34,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {isMobileBuild ? (
-          // Mobile build - no Clerk provider
-          <div>
-            {children}
-          </div>
-        ) : (
-          // Web build - with Clerk provider
-          <ClerkProvider>
-            <UserSync />
-            {children}
-          </ClerkProvider>
-        )}
+        <ClerkProvider>
+          <UserSync />
+          {children}
+        </ClerkProvider>
       </body>
     </html>
   );

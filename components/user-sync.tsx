@@ -1,5 +1,6 @@
 'use client'
 
+import { useUser } from '@clerk/nextjs'
 import { useEffect, useRef, useState } from 'react'
 
 // Get the correct API base URL
@@ -10,24 +11,8 @@ const getApiBaseUrl = () => {
   return ''
 }
 
-// Mobile-safe hook
-const useMobileUser = () => {
-  const isMobileBuild = process.env.NEXT_PUBLIC_CAPACITOR_BUILD === 'true'
-  
-  if (isMobileBuild) {
-    return { isSignedIn: false, user: null }
-  }
-  
-  try {
-    const { useUser } = require('@clerk/nextjs')
-    return useUser()
-  } catch {
-    return { isSignedIn: false, user: null }
-  }
-}
-
 export default function UserSync() {
-  const { isSignedIn, user } = useMobileUser()
+  const { isSignedIn, user } = useUser()
   const syncedRef = useRef(false)
   const [syncing, setSyncing] = useState(false)
   const [error, setError] = useState<string | null>(null)

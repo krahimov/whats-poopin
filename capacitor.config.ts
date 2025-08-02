@@ -3,12 +3,12 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.whatspoopin.app',
   appName: "What's Poopin",
-  webDir: 'out',
+  webDir: 'out', // Keep this for fallback
   server: {
-    androidScheme: 'https',
-    // Use live web app for API calls
+    // Load the live web app directly
     url: 'https://whats-poopin-git-dev-karim-rahimovs-projects.vercel.app',
-    cleartext: true
+    cleartext: true,
+    androidScheme: 'https'
   },
   plugins: {
     Camera: {
@@ -25,6 +25,11 @@ const config: CapacitorConfig = {
       showSpinner: false,
       splashFullScreen: true,
       splashImmersive: true,
+    },
+    // Add status bar configuration for better mobile experience
+    StatusBar: {
+      backgroundColor: "#3b82f6",
+      style: "dark"
     }
   }
 };
